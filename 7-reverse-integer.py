@@ -4,17 +4,4 @@ Given a signed 32-bit integer x , return x with its digits reversed . If reversi
 
 class Solution:
     def reverse(self, x: int) -> int:
-        reversed_num = []
-        str_x = str(x)
-        start = 0
-        end = len(str_x) - 1
-
-        while start < end:
-            reversed_num.append(int(str_x[start]))
-            reversed_num.append(int(str_x[end]))
-            start += 1
-            end -= 1
-
-        reversed_num_str = ''.join(map(str, reversed_num))
-        reversed_num_int = int(reversed_num_str)
-
+        
