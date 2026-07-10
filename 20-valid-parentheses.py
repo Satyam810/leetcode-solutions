@@ -1,16 +1,16 @@
-def isValid(s: str) -> bool:
-  # Create a dictionary to map closing parentheses to their corresponding opening parentheses
-  parentheses_map = {')': '(', '}': '{', ']': '['}
-  
-  # Create an empty stack to store the opening parentheses
+  # Create an empty stack to store the opening brackets
   stack = []
   
-  # Iterate through each character in the input string
+  # Iterate through the input string
   for char in s:
-    # If the character is an opening parenthesis, push it onto the stack
-    if char in parentheses_map.values():
+    # If we encounter an opening bracket, push it onto the stack
+    if char in bracket_map.values():
       stack.append(char)
-    # If the character is a closing parenthesis
-    elif char in parentheses_map.keys():
-      # Check if the stack is empty or if the top of the stack does not contain the corresponding opening parenthesis
-      if not stack or stack.pop() != parentheses_map[char]:
+    # If we encounter a closing bracket, check if the stack is empty or if the top of the stack does not match the closing bracket
+    elif char in bracket_map.keys():
+      if not stack or stack.pop() != bracket_map[char]:
+        return False
+  
+  bracket_map = {')': '(', '}': '{', ']': '['}
+  # Create a dictionary to map closing brackets to their corresponding opening brackets
+def isValid(s):
