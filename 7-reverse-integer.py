@@ -1,0 +1,20 @@
+"""
+Given a signed 32-bit integer x , return x with its digits reversed . If reversing x causes the value to go outside the signed 32-bit integer range [-2 31 , 2 31 - 1] , then return 0 . Assume the environment does not allow you to store 64-bit integers (signed or unsigned). &nbsp; Example 1: Input: x = 123 Output: 321 Example 2: Input: x = -123 Output: -321 Example 3: Input: x = 120 Output: 21 &nbsp; Constraints: -2 31 &lt;= x &lt;= 2 31 - 1
+"""
+
+class Solution:
+    def reverse(self, x: int) -> int:
+        reversed_num = []
+        str_x = str(x)
+        start = 0
+        end = len(str_x) - 1
+
+        while start < end:
+            reversed_num.append(int(str_x[start]))
+            reversed_num.append(int(str_x[end]))
+            start += 1
+            end -= 1
+
+        reversed_num_str = ''.join(map(str, reversed_num))
+        reversed_num_int = int(reversed_num_str)
+
