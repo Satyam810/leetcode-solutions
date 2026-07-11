@@ -9,48 +9,37 @@ class Solution(object):
         :type edges: List[List[int]]
         :rtype: int
         """
-        # Create adjacency list representation of the graph
+        # Create adjacency list
         graph = [[] for _ in range(n)]
         for u, v in edges:
             graph[u].append(v)
             graph[v].append(u)
-
-        # Initialize union-find data structure
-        parent = list(range(n))
-        rank = [0] * n
-
-        # Identify connected components using union-find
-        def find(x):
-            if parent[x] != x:
-                parent[x] = find(parent[x])
-            return parent[x]
-
-        def union(x, y):
-            rootX = find(x)
-            rootY = find(y)
-            if rootX != rootY:
-                if rank[rootX] < rank[rootY]:
-                    parent[rootX] = rootY
-                else:
-                    parent[rootY] = rootX
-                    if rank[rootX] == rank[rootY]:
-                        rank[rootX] += 1
-
-        for u, v in edges:
-            union(u, v)
-
-        # Count complete components
-        components = {}
+        
+        # Find connected components
+        visited = [False] * n
+        components = []
         for i in range(n):
-            root = find(i)
-            if root not in components:
-                components[root] = []
-            components[root].append(i)
-
+            if not visited[i]:
+                component = []
+                self.dfs(graph, i, visited, component)
+                components.append(component)
+        
         count = 0
-        for component in components.values():
+        for component in components:
+            # Calculate number of edges and vertices in component
+            numEdges = sum(len(graph[v]) for v in component) // 2
             numVertices = len(component)
-            numEdges = sum(1 for u in component for v in graph[u] if v in component)
-            if numEdges == numVertices * (numVertices - 1) // 2:
+            
+            # Check if component is complete
+            expectedEdges = numVertices * (numVertices - 1) // 2
+            if numEdges == expectedEdges:
                 count += 1
+        
         return count
+    
+    def dfs(self, graph, node, visited, component):
+        visited[node] = True
+        component.append(node)
+        for neighbor in graph[node]:
+            if not visited[neighbor]:
+                self.dfs(graph, neighbor, visited, component)
