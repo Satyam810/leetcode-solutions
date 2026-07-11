@@ -9,39 +9,47 @@ class Solution(object):
         :type edges: List[List[int]]
         :rtype: int
         """
-        # Create adjacency list representation of the graph
-        graph = [[] for _ in range(n)]
-        for u, v in edges:
-            graph[u].append(v)
-            graph[v].append(u)
-
-        # Identify connected components using DFS
-        visited = [False] * n
-        components = []
+        parent = list(range(n))
+        rank = [0] * n
+        
+        def find(x):
+            if parent[x] != x:
+                parent[x] = find(parent[x])
+            return parent[x]
+        
+        def union(x, y):
+            rootx = find(x)
+            rooty = find(y)
+            if rootx != rooty:
+                if rank[rootx] > rank[rooty]:
+                    parent[rooty] = rootx
+                elif rank[rootx] < rank[rooty]:
+                    parent[rootx] = rooty
+                else:
+                    parent[rooty] = rootx
+                    rank[rootx] += 1
+        
+        for x, y in edges:
+            union(x, y)
+        
+        components = {}
         for i in range(n):
-            if not visited[i]:
-                component = []
-                self.DFS(i, graph, visited, component)
-                components.append(component)
-
-        # Count complete connected components
+            root = find(i)
+            if root not in components:
+                components[root] = []
+            components[root].append(i)
+        
         count = 0
-        for component in components:
-            if self.isComplete(component, graph):
+        for component in components.values():
+            is_complete = True
+            for i in range(len(component)):
+                for j in range(i + 1, len(component)):
+                    if (component[i], component[j]) not in edges and (component[j], component[i]) not in edges:
+                        is_complete = False
+                        break
+                if not is_complete:
+                    break
+            if is_complete:
                 count += 1
-
+        
         return count
-
-    def DFS(self, vertex, graph, visited, component):
-        visited[vertex] = True
-        component.append(vertex)
-        for neighbor in graph[vertex]:
-            if not visited[neighbor]:
-                self.DFS(neighbor, graph, visited, component)
-
-    def isComplete(self, component, graph):
-        for i in range(len(component)):
-            for j in range(i + 1, len(component)):
-                if component[j] not in graph[component[i]]:
-                    return False
-        return True
