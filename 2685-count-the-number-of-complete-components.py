@@ -9,37 +9,39 @@ class Solution(object):
         :type edges: List[List[int]]
         :rtype: int
         """
-        # Create adjacency list
+        # Create adjacency list representation of the graph
         graph = [[] for _ in range(n)]
         for u, v in edges:
             graph[u].append(v)
             graph[v].append(u)
-        
-        # Find connected components
+
+        # Identify connected components using DFS
         visited = [False] * n
         components = []
         for i in range(n):
             if not visited[i]:
                 component = []
-                self.dfs(graph, i, visited, component)
+                self.DFS(i, graph, visited, component)
                 components.append(component)
-        
+
+        # Count complete connected components
         count = 0
         for component in components:
-            # Calculate number of edges and vertices in component
-            numEdges = sum(len(graph[v]) for v in component) // 2
-            numVertices = len(component)
-            
-            # Check if component is complete
-            expectedEdges = numVertices * (numVertices - 1) // 2
-            if numEdges == expectedEdges:
+            if self.isComplete(component, graph):
                 count += 1
-        
+
         return count
-    
-    def dfs(self, graph, node, visited, component):
-        visited[node] = True
-        component.append(node)
-        for neighbor in graph[node]:
+
+    def DFS(self, vertex, graph, visited, component):
+        visited[vertex] = True
+        component.append(vertex)
+        for neighbor in graph[vertex]:
             if not visited[neighbor]:
-                self.dfs(graph, neighbor, visited, component)
+                self.DFS(neighbor, graph, visited, component)
+
+    def isComplete(self, component, graph):
+        for i in range(len(component)):
+            for j in range(i + 1, len(component)):
+                if component[j] not in graph[component[i]]:
+                    return False
+        return True
