@@ -9,36 +9,44 @@ class Solution(object):
         :type edges: List[List[int]]
         :rtype: int
         """
-        # Create adjacency list representation of the graph
+        # Create adjacency list
         graph = [[] for _ in range(n)]
         for u, v in edges:
             graph[u].append(v)
             graph[v].append(u)
         
-        # Initialize variables to keep track of connected components
+        # Initialize variables
         visited = [False] * n
-        components = []
+        componentCount = 0
         
-        # Use DFS to identify connected components
-        for i in range(n):
-            if not visited[i]:
-                component = []
-                self.DFS(graph, i, visited, component)
-                components.append(component)
+        # Perform DFS to find connected components
+        for vertex in range(n):
+            if not visited[vertex]:
+                component = set()
+                self.DFS(graph, vertex, visited, component)
+                # Check if component is complete
+                if self.isComplete(component, graph):
+                    componentCount++
         
-        # Count complete connected components
-        count = 0
-        for component in components:
-            numEdges = sum(1 for i in range(len(component)) for j in range(i + 1, len(component)) if component[j] in graph[component[i]])
-            numPossibleEdges = len(component) * (len(component) - 1) // 2
-            if numEdges == numPossibleEdges:
-                count += 1
-        
-        return count
-    
+        return componentCount
+
     def DFS(self, graph, vertex, visited, component):
         visited[vertex] = True
-        component.append(vertex)
+        component.add(vertex)
         for neighbor in graph[vertex]:
             if not visited[neighbor]:
                 self.DFS(graph, neighbor, visited, component)
+
+    def isComplete(self, component, graph):
+        # Calculate theoretical max edges for component size
+        maxEdges = len(component) * (len(component) - 1) // 2
+        actualEdges = self.countEdges(component, graph)
+        return maxEdges == actualEdges
+
+    def countEdges(self, component, graph):
+        edgeCount = 0
+        for vertex in component:
+            for neighbor in graph[vertex]:
+                if neighbor in component:
+                    edgeCount += 1
+        return edgeCount // 2  # Divide by 2 to avoid double counting
