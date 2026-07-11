@@ -9,14 +9,21 @@ class Solution(object):
         :type edges: List[List[int]]
         :rtype: int
         """
+        # Create adjacency list representation of the graph
+        graph = [[] for _ in range(n)]
+        for u, v in edges:
+            graph[u].append(v)
+            graph[v].append(u)
+
+        # Use union-find to find connected components
         parent = list(range(n))
         rank = [0] * n
-        
+
         def find(x):
             if parent[x] != x:
                 parent[x] = find(parent[x])
             return parent[x]
-        
+
         def union(x, y):
             rootx = find(x)
             rooty = find(y)
@@ -28,28 +35,29 @@ class Solution(object):
                 else:
                     parent[rooty] = rootx
                     rank[rootx] += 1
-        
-        for x, y in edges:
-            union(x, y)
-        
+
+        for u, v in edges:
+            union(u, v)
+
+        # Count complete components
+        count = 0
         components = {}
         for i in range(n):
             root = find(i)
             if root not in components:
                 components[root] = []
             components[root].append(i)
-        
-        count = 0
+
         for component in components.values():
-            is_complete = True
+            isComplete = True
             for i in range(len(component)):
                 for j in range(i + 1, len(component)):
-                    if (component[i], component[j]) not in edges and (component[j], component[i]) not in edges:
-                        is_complete = False
+                    if component[j] not in graph[component[i]]:
+                        isComplete = False
                         break
-                if not is_complete:
+                if not isComplete:
                     break
-            if is_complete:
+            if isComplete:
                 count += 1
-        
+
         return count
