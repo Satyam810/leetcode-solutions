@@ -15,31 +15,48 @@ class Solution(object):
             graph[u].append(v)
             graph[v].append(u)
 
-        # Initialize visited set and count of complete components
-        visited = set()
-        count = 0
+        # Use union-find to identify connected components
+        parent = list(range(n))
+        rank = [0] * n
 
-        # Iterate over all vertices to find connected components
+        def find(x):
+            if parent[x] != x:
+                parent[x] = find(parent[x])
+            return parent[x]
+
+        def union(x, y):
+            rootx = find(x)
+            rooty = find(y)
+            if rootx != rooty:
+                if rank[rootx] > rank[rooty]:
+                    parent[rooty] = rootx
+                elif rank[rootx] < rank[rooty]:
+                    parent[rootx] = rooty
+                else:
+                    parent[rooty] = rootx
+                    rank[rootx] += 1
+
+        for u, v in edges:
+            union(u, v)
+
+        # Count the number of complete connected components
+        count = 0
+        visited = [False] * n
         for i in range(n):
-            if i not in visited:
+            if not visited[i]:
                 component = []
-                self.dfs(i, graph, visited, component)
-                # Check if the component is complete
-                if self.isComplete(component, graph):
+                stack = [i]
+                visited[i] = True
+                while stack:
+                    node = stack.pop()
+                    component.append(node)
+                    for neighbor in graph[node]:
+                        if not visited[neighbor]:
+                            stack.append(neighbor)
+                            visited[neighbor] = True
+                numVertices = len(component)
+                numEdges = sum(1 for u in component for v in graph[u] if v in component) // 2
+                if numEdges == numVertices * (numVertices - 1) // 2:
                     count += 1
 
         return count
-
-    def dfs(self, vertex, graph, visited, component):
-        visited.add(vertex)
-        component.append(vertex)
-        for neighbor in graph[vertex]:
-            if neighbor not in visited:
-                self.dfs(neighbor, graph, visited, component)
-
-    def isComplete(self, component, graph):
-        for vertex1 in component:
-            for vertex2 in component:
-                if vertex1 != vertex2 and vertex2 not in graph[vertex1]:
-                    return False
-        return True
