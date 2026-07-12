@@ -4,10 +4,6 @@ Given an array of integers&nbsp; arr , replace each element with its rank. The r
 
 class Solution(object):
     def arrayRankTransform(self, arr):
-        """
-        :type arr: List[int]
-        :rtype: List[int]
-        """
-        unique_elements = sorted(set(arr))
-        rank_dict = {element: index + 1 for index, element in enumerate(unique_elements)}
-        return [rank_dict[element] for element in arr]
+        sorted_arr = sorted(set(arr))
+        rank_dict = {x: i + 1 for i, x in enumerate(sorted_arr)}
+        return [rank_dict[x] for x in arr]
